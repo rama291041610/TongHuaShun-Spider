@@ -32,6 +32,7 @@ class Page(object):
     def __analize_page(self):
         r = requests.get(self.url, headers=headers)
         if r.status_code == 403:
+            print("Too fast, Forbidden!")
             time.sleep(1234)
             self.__analize_page()
         else:
@@ -39,12 +40,13 @@ class Page(object):
 
     def __get_all_article(self):
         articles = []
-        links = map(lambda x: re.sub("http://\\w+\\.10jqka.com\\.cn/", self.__m_url,
-                                     x.get('href')), self.__soup.select(".arc-title > a"))
+        links = list(map(lambda x: re.sub("http://\\w+\\.10jqka.com\\.cn/",
+                                          self.__m_url, x.get('href')), self.__soup.select(".arc-title > a")))
         i = 0
         while i < len(links):
             r = requests.get(links[i], headers=headers, allow_redirects=False)
             if r.status_code == 403:
+                print("Too fast, Forbidden!")
                 time.sleep(1234)
                 continue
             try:
@@ -52,7 +54,7 @@ class Page(object):
             except IndexError:
                 pass
             finally:
-                time.sleep(random.uniform(0.12, 0.36))
+                time.sleep(random.uniform(0.18, 0.46))
                 i += 1
         return articles
 
