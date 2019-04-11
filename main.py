@@ -4,6 +4,7 @@
 import datetime
 import threading
 import time
+import random
 from config import *
 from page import Page
 from mysql import Mysql
@@ -48,7 +49,7 @@ def spider(kind):
             break
         else:
             pn += 1
-            time.sleep(1.5)
+            time.sleep(random.uniform(2.33, 6.66))
 
 
 def main():

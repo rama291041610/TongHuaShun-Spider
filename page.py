@@ -5,12 +5,11 @@
 
 import article
 import requests
+import random
 import time
 import bs4
 import re
 
-# headers = {
-#'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'}
 headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
 
 types = {"财经要闻": "today_list",
@@ -32,20 +31,29 @@ class Page(object):
 
     def __analize_page(self):
         r = requests.get(self.url, headers=headers)
-        self.__soup = bs4.BeautifulSoup(r.content, "lxml", from_encoding=r.encoding)
+        if r.status_code == 403:
+            time.sleep(1234)
+            self.__analize_page()
+        else:
+            self.__soup = bs4.BeautifulSoup(r.content, "lxml", from_encoding=r.encoding)
 
     def __get_all_article(self):
         articles = []
         links = map(lambda x: re.sub("http://\\w+\\.10jqka.com\\.cn/", self.__m_url,
                                      x.get('href')), self.__soup.select(".arc-title > a"))
-        for link in links:
-            r = requests.get(link, headers=headers, allow_redirects=False)
+        i = 0
+        while i < len(links):
+            r = requests.get(links[i], headers=headers, allow_redirects=False)
+            if r.status_code == 403:
+                time.sleep(1234)
+                continue
             try:
                 articles.append(article.Article(self.type, r.content, r.encoding))
             except IndexError:
                 pass
             finally:
-                time.sleep(0.08)
+                time.sleep(random.uniform(0.12, 0.36))
+                i += 1
         return articles
 
     def get_articles(self):
