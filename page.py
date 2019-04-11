@@ -5,11 +5,13 @@
 
 import article
 import requests
+import time
 import bs4
 import re
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'}
+# headers = {
+#'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'}
+headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
 
 types = {"财经要闻": "today_list",
          "宏观经济": "cjzx_list",
@@ -30,7 +32,7 @@ class Page(object):
 
     def __analize_page(self):
         r = requests.get(self.url, headers=headers)
-        self.__soup = bs4.BeautifulSoup(r.text, "lxml")
+        self.__soup = bs4.BeautifulSoup(r.content, "lxml", from_encoding=r.encoding)
 
     def __get_all_article(self):
         articles = []
@@ -39,9 +41,11 @@ class Page(object):
         for link in links:
             r = requests.get(link, headers=headers, allow_redirects=False)
             try:
-                articles.append(article.Article(self.type, r.text))
+                articles.append(article.Article(self.type, r.content, r.encoding))
             except IndexError:
                 pass
+            finally:
+                time.sleep(0.08)
         return articles
 
     def get_articles(self):

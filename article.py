@@ -8,8 +8,8 @@ import re
 
 
 class Article():
-    def __init__(self, kind, text):
-        self.__soup = bs4.BeautifulSoup(text, "lxml")
+    def __init__(self, kind, text, encoding):
+        self.__soup = bs4.BeautifulSoup(text, "lxml", from_encoding=encoding)
         self.type = kind
         self.title = self.get_title()
         self.content = self.get_content()

@@ -3,6 +3,7 @@
 
 import datetime
 import threading
+import time
 from config import *
 from page import Page
 from mysql import Mysql
@@ -10,10 +11,13 @@ from mysql import Mysql
 
 def is_exist(mysql, kind, title):
     sql = 'SELECT COUNT(*) from news where `type` = "%s" and `title` = "%s"' % (kind, title)
-    if mysql.query(sql)[0] == 0:
+    data = mysql.query(sql)
+    if data and data[0] == 0:
         return False
-    else:
+    elif data:
         return True
+    else:
+        return False
 
 
 def insert(mysql, info):
@@ -22,7 +26,8 @@ def insert(mysql, info):
     mysql.insert(sql)
 
 
-def spider(mysql, kind):
+def spider(kind):
+    mysql = Mysql(config)
     pn = 1
 
     while True:
@@ -43,6 +48,7 @@ def spider(mysql, kind):
             break
         else:
             pn += 1
+            time.sleep(1.5)
 
 
 def main():
@@ -51,11 +57,9 @@ def main():
     types = ["财经要闻", "宏观经济", "产经新闻", "金融市场", "公司新闻"]
     thread_num = len(types)
 
-    mysql = Mysql(config)
-
     thread_list = []
     for i in range(len(types)):
-        thread_list.append(threading.Thread(target=spider, args=(mysql, types[i]), name=i))
+        thread_list.append(threading.Thread(target=spider, args=(types[i],), name=i))
 
     for t in thread_list:
         t.start()
