@@ -4,6 +4,7 @@
 import datetime
 import threading
 import random
+import time
 from config import *
 from page import Page
 from mysql import Mysql
@@ -31,8 +32,12 @@ def spider(kind):
     pn = 1
 
     while True:
-        p = Page(kind, pn)
-        articles = p.get_articles()
+        try:
+            p = Page(kind, pn)
+            articles = p.get_articles()
+        except:
+            time.sleep(random.uniform(0.24, 1.08))
+            continue
 
         status = False
         for article in articles:
@@ -43,11 +48,15 @@ def spider(kind):
                 print(threading.currentThread().getName() + "/" + str(thread_num),
                       datetime.datetime.now(), "Current:" + kind, "Page:", pn, "Title:" + article.get_title())
                 insert(mysql, article.get_info_dict())
+            else:
+                print(threading.currentThread().getName() + "/" + str(thread_num),
+                      datetime.datetime.now(), "Current:" + kind, "Page:", pn, "Title:" + article.get_title(),"already exist!")
         if status:
             print(threading.currentThread().getName() + "/" + str(thread_num), datetime.datetime.now(), kind, "Finish!")
             break
         else:
             pn += 1
+            time.sleep(random.uniform(1.05, 3.08))
 
 
 def main():
