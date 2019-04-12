@@ -56,7 +56,7 @@ class Page(object):
             except IndexError:
                 pass
             finally:
-                time.sleep(random.uniform(0.62, 1.32))
+                time.sleep(random.uniform(0.62, 1.08))
                 i += 1
         return articles
 
