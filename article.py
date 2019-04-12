@@ -16,7 +16,8 @@ class Article():
         self.time = self.get_time()
 
     def get_time(self):
-        return re.sub(r'[^\d\-:\s]+', "", self.__soup.select(".date")[0].text.replace("\xa0", "")).strip()
+        return re.search("(\\d{4}\\-\\d{2}\\-\\d{2}\\s\\d{2}:\\d{2}:\\d{2})", self.__soup.select(".date")[0].text.replace("\xa0", "")).group(1)
+        #return re.sub(r'[^\d\-:\s]+', "", self.__soup.select(".date")[0].text.replace("\xa0", "")).strip()
 
     def get_title(self):
         return self.__soup.select("#articleTitle")[0].text

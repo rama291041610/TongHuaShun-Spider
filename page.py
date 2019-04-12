@@ -28,6 +28,8 @@ class Page(object):
             self.url = "http://news.10jqka.com.cn/" + types[kind] + "/index_" + str(pn) + ".shtml"
             self.__analize_page()
             self.articles = self.__get_all_article()
+        else:
+            print("该分类不存在！")
 
     def __analize_page(self):
         r = requests.get(self.url, headers=headers)
@@ -54,7 +56,7 @@ class Page(object):
             except IndexError:
                 pass
             finally:
-                time.sleep(random.uniform(0.18, 0.46))
+                time.sleep(random.uniform(0.62, 1.32))
                 i += 1
         return articles
 
