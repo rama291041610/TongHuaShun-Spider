@@ -10,8 +10,8 @@ from page import Page
 from mysql import Mysql
 
 
-def is_exist(mysql, kind, title):
-    sql = 'SELECT COUNT(*) from news where `type` = "%s" and `title` = "%s"' % (kind, title)
+def is_exist(mysql, title):
+    sql = 'SELECT COUNT(*) from news where `title` = "%s"' % (title)
     data = mysql.query(sql)
     if data and data[0] == 0:
         return False
@@ -44,13 +44,13 @@ def spider(kind):
             if article.get_time() < end_time:
                 status = True
                 break
-            elif is_exist(mysql, kind, article.get_title()) == False:
+            elif is_exist(mysql, article.get_title()) == False:
                 print(threading.currentThread().getName() + "/" + str(thread_num),
                       datetime.datetime.now(), "Current:" + kind, "Page:", pn, "Title:" + article.get_title())
                 insert(mysql, article.get_info_dict())
             else:
                 print(threading.currentThread().getName() + "/" + str(thread_num),
-                      datetime.datetime.now(), "Current:" + kind, "Page:", pn, "Title:" + article.get_title(),"already exist!")
+                      datetime.datetime.now(), "Current:" + kind, "Page:", pn, "Title:" + article.get_title(), "already exist!")
         if status:
             print(threading.currentThread().getName() + "/" + str(thread_num), datetime.datetime.now(), kind, "Finish!")
             break
